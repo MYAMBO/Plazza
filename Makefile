@@ -13,11 +13,14 @@ CFLAGS      	= 	-Wall -Wextra -Werror -Iinclude
 DEBUG_FLAGS 	= 	-g
 TEST_CFLAGS 	= 	--coverage -lcriterion
 
-INCLUDE_FLAGS 	= 												\
+INCLUDE_FLAGS 	= 	-I src/Core									\
+					-I src/Utils 								\
 
 SRC_TEST        = 												\
 
 SRC		 		=	src/main.cpp 								\
+					src/Core/Core.cpp 							\
+					src/Utils/Utils.cpp 						\
 
 
 
