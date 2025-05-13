@@ -13,21 +13,14 @@ CFLAGS      	= 	-Wall -Wextra -Werror -Iinclude
 DEBUG_FLAGS 	= 	-g
 TEST_CFLAGS 	= 	--coverage -lcriterion
 
-INCLUDE_FLAGS 	= 	-I include/My								\
-																\
-					-I include/Parsing							\
-																\
-					-I include/interface 						\
-																\
-					-I include/Components 						\
-					-I include/Components/Gates					\
-					-I include/Components/Special				\
-					-I include/Components/Advanced				\
-					-I include/Components/Elementary			\
+INCLUDE_FLAGS 	= 	-I src/Core									\
+					-I src/Utils 								\
 
 SRC_TEST        = 												\
 
 SRC		 		=	src/main.cpp 								\
+					src/Core/Core.cpp 							\
+					src/Utils/Utils.cpp 						\
 
 
 
