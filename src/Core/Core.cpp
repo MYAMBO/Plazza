@@ -5,6 +5,8 @@
 ** Core
 */
 
+#include <iostream>
+
 #include "Core.hpp"
 #include "Utils.hpp"
 
