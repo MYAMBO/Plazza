@@ -9,24 +9,34 @@
 
 #include "Core.hpp"
 #include "Utils.hpp"
+#include "Regina/ReginaPizza.hpp"
+#include "Fantasia/FantasiaPizza.hpp"
+#include "Margarita/MargaritaPizza.hpp"
+#include "Americana/AmericanaPizza.hpp"
 
-Core::Core()
+Core::Core(size_t cookNumber, int regenerateTime)
+    :_kitchen(cookNumber, regenerateTime)
 {
-    this->_pizzaNameList.emplace("regina");
-    this->_pizzaNameList.emplace("fantasia");
-    this->_pizzaNameList.emplace("margarita");
-    this->_pizzaNameList.emplace("americana");
+    _pizzaNameList["regina"] = [](PizzaSize size) { return std::make_unique<ReginaPizza>(size); };
+    _pizzaNameList["fantasia"] = [](PizzaSize size) { return std::make_unique<FantasiaPizza>(size); };
+    _pizzaNameList["margarita"] = [](PizzaSize size) { return std::make_unique<MargaritaPizza>(size); };
+    _pizzaNameList["americana"] = [](PizzaSize size) { return std::make_unique<AmericanaPizza>(size); };
 
-    this->_pizzaSizeList.emplace("S");
-    this->_pizzaSizeList.emplace("M");
-    this->_pizzaSizeList.emplace("L");
-    this->_pizzaSizeList.emplace("XL");
-    this->_pizzaSizeList.emplace("XXL");
+    _pizzaSizeList.emplace("S", PizzaSize::S);
+    _pizzaSizeList.emplace("M", PizzaSize::M);
+    _pizzaSizeList.emplace("L", PizzaSize::L);
+    _pizzaSizeList.emplace("XL", PizzaSize::XL);
+    _pizzaSizeList.emplace("XXL", PizzaSize::XXL);
 }
 
-Core::~Core()
+void Core::handlePizza(std::string type, std::string size, int nb)
 {
-
+    std::cout << "type: " << type << std::endl;
+    std::cout << "taille: " << size << std::endl;
+    std::cout << "nombre: " << nb << std::endl;
+    
+    auto pizza = _pizzaNameList[type](_pizzaSizeList[size]);
+    pizza->cook(_kitchen.getStock());
 }
 
 void Core::handleCommand(std::vector<std::string> wordArray)
@@ -53,10 +63,7 @@ void Core::handleCommand(std::vector<std::string> wordArray)
         std::cout << "number of pizza must be a number between 1 and 99" << std::endl;
         return;
     }
-    std::cout << "type: " << wordArray[0] << std::endl;
-    std::cout << "taille: " << wordArray[1] << std::endl;
-    std::cout << "nombre: " << nb << std::endl;
-    // handle pizza
+    handlePizza(wordArray[0], wordArray[1], nb);
 }
 
 void Core::parse()
@@ -68,6 +75,11 @@ void Core::parse()
     while (std::getline(std::cin, line)) {
         if (line == "exit")
             break;
+        if (line == "ingredients") {
+            _kitchen.printIngredient();
+            std::cout << "> ";
+            continue;
+        }
         wordArray = Utils::strToWordArray(line, " \t");
         handleCommand(wordArray);
         std::cout << "> ";

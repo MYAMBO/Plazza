@@ -9,19 +9,25 @@
 #define PARSING_HPP_
 
 #include <string>
-#include <vector>
-#include <unordered_set>
+#include <functional>
+#include <unordered_map>
+
+#include "IPizza.hpp"
+#include "Kitchen.hpp"
 
 class Core {
     public:
-        Core();
-        ~Core();
+        Core(size_t cookNumber, int regenerateTime);
+        ~Core() = default;
 
         void parse();
         void handleCommand(std::vector<std::string> wordArray);
+        void handlePizza(std::string type, std::string size, int nb);
     private:
-        std::unordered_set<std::string> _pizzaNameList;
-        std::unordered_set<std::string> _pizzaSizeList;
+        std::unordered_map<std::string, std::function<std::unique_ptr<IPizza>(PizzaSize)>> _pizzaNameList;
+        std::unordered_map<std::string, PizzaSize> _pizzaSizeList;
+
+        Kitchen _kitchen; // only one for now
 };
 
 #endif
