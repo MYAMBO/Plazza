@@ -9,7 +9,7 @@
 
 int main(void)
 {
-    Core parser(5, 1000);
+    Core parser(5, 10000, 10000);
 
     parser.parse();
     return 0;

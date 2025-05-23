@@ -12,7 +12,7 @@
 
 class AmericanaPizza : public APizza {
     public:
-        AmericanaPizza(PizzaSize);
+        AmericanaPizza(std::string size);
         ~AmericanaPizza() = default;
 };
 

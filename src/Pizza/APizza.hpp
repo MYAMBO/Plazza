@@ -14,14 +14,19 @@
 
 class APizza : public IPizza {
     public:
-        APizza(PizzaSize size);
+        APizza(std::string size);
         ~APizza() = default;
 
+        int getCookTime() const;
+        std::string getSize() const;
         std::string getName() const;
+
+        bool canCook(Stock& stock);
         void cook(Stock& stock);
     protected:
+        int _cookTime;
         PizzaType _type;
-        PizzaSize _size;
+        std::string _size;
         std::string _name;
         std::unordered_set<std::string> _pizzaIngredients;
 };

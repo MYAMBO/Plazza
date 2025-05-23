@@ -8,8 +8,6 @@
 #ifndef IPIZZA_HPP_
     #define IPIZZA_HPP_
 
-    #include <string>
-
     #include "Stock.hpp"
 
 enum PizzaType {
@@ -31,7 +29,11 @@ class IPizza {
     public:
         virtual ~IPizza() = default;
 
+        virtual int getCookTime() const = 0;
+        virtual std::string getSize() const = 0;
         virtual std::string getName() const = 0;
+
+        virtual bool canCook(Stock& stock) = 0;
         virtual void cook(Stock& stock) = 0;
 };
 

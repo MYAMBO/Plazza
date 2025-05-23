@@ -12,7 +12,7 @@
 
 class MargaritaPizza : public APizza {
     public:
-        MargaritaPizza(PizzaSize);
+        MargaritaPizza(std::string size);
         ~MargaritaPizza() = default;
 };
 

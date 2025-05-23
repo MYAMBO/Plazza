@@ -7,9 +7,10 @@
 
 #include "FantasiaPizza.hpp"
 
-FantasiaPizza::FantasiaPizza(PizzaSize size)
+FantasiaPizza::FantasiaPizza(std::string size)
     :APizza(size)
 {
+    _cookTime = 4;
     _name = "Fantasia";
     _type = PizzaType::Fantasia;
     _pizzaIngredients = {"dough", "tomato", "eggplant", "goatCheese", "chiefLove"};

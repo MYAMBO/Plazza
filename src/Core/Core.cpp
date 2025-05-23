@@ -14,13 +14,13 @@
 #include "Margarita/MargaritaPizza.hpp"
 #include "Americana/AmericanaPizza.hpp"
 
-Core::Core(size_t cookNumber, int regenerateTime)
-    :_kitchen(cookNumber, regenerateTime)
+Core::Core(size_t cookNumber, int regenerateTime, int cookTime)
+    :_kitchen(cookNumber, regenerateTime, cookTime, _isRunning), _isRunning(true)
 {
-    _pizzaNameList["regina"] = [](PizzaSize size) { return std::make_unique<ReginaPizza>(size); };
-    _pizzaNameList["fantasia"] = [](PizzaSize size) { return std::make_unique<FantasiaPizza>(size); };
-    _pizzaNameList["margarita"] = [](PizzaSize size) { return std::make_unique<MargaritaPizza>(size); };
-    _pizzaNameList["americana"] = [](PizzaSize size) { return std::make_unique<AmericanaPizza>(size); };
+    _pizzaNameList["regina"] = [](std::string size) { return std::make_shared<ReginaPizza>(size); };
+    _pizzaNameList["fantasia"] = [](std::string size) { return std::make_shared<FantasiaPizza>(size); };
+    _pizzaNameList["margarita"] = [](std::string size) { return std::make_shared<MargaritaPizza>(size); };
+    _pizzaNameList["americana"] = [](std::string size) { return std::make_shared<AmericanaPizza>(size); };
 
     _pizzaSizeList.emplace("S", PizzaSize::S);
     _pizzaSizeList.emplace("M", PizzaSize::M);
@@ -31,12 +31,16 @@ Core::Core(size_t cookNumber, int regenerateTime)
 
 void Core::handlePizza(std::string type, std::string size, int nb)
 {
-    std::cout << "type: " << type << std::endl;
-    std::cout << "taille: " << size << std::endl;
-    std::cout << "nombre: " << nb << std::endl;
-    
-    auto pizza = _pizzaNameList[type](_pizzaSizeList[size]);
-    pizza->cook(_kitchen.getStock());
+    for (int i = 0; i < nb; i++) {
+        auto pizza = _pizzaNameList[type](size);
+
+        _kitchen.addInQueue(pizza);
+
+        // this 2 conditions must be used while implementing multy kitchen :
+
+        // if (_kitchen.getAvailableCookNumber() == 0)
+        // if (pizza->canCook(_kitchen.getStock()))
+    }
 }
 
 void Core::handleCommand(std::vector<std::string> wordArray)
@@ -84,5 +88,6 @@ void Core::parse()
         handleCommand(wordArray);
         std::cout << "> ";
     }
+    _isRunning = false;
     std::cout << "exit" << std::endl;
 }
