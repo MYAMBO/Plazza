@@ -9,20 +9,31 @@ NAME        	= 	plazza
 TEST        	= 	unit_tests
 CC          	= 	g++
 
-CFLAGS      	= 	-Wall -Wextra -Werror -Iinclude
+CFLAGS      	= 	-Wall -Wextra -Werror -Iinclude -std=c++20
 DEBUG_FLAGS 	= 	-g
 TEST_CFLAGS 	= 	--coverage -lcriterion
 
-INCLUDE_FLAGS 	= 	-I src/Core									\
-					-I src/Utils 								\
+INCLUDE_FLAGS 	= 	-Isrc/Core									\
+					-Isrc/Utils 								\
+					-Isrc/Pizza 								\
+					-Isrc/Kitchen 								\
 
 SRC_TEST        = 												\
 
 SRC		 		=	src/main.cpp 								\
+																\
 					src/Core/Core.cpp 							\
+																\
 					src/Utils/Utils.cpp 						\
-
-
+																\
+					src/Kitchen/Stock.cpp 						\
+					src/Kitchen/Kitchen.cpp 					\
+																\
+					src/Pizza/APizza.cpp 						\
+					src/Pizza/Regina/ReginaPizza.cpp 			\
+					src/Pizza/Fantasia/FantasiaPizza.cpp 		\
+					src/Pizza/Margarita/MargaritaPizza.cpp 		\
+					src/Pizza/Americana/AmericanaPizza.cpp 		\
 
 OBJ 			=	$(SRC:src/%.cpp=obj/%.o)
 
