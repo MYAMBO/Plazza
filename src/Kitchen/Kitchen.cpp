@@ -42,7 +42,7 @@ void Kitchen::letMeCook(int id, Stock& stock, int cookTime, std::counting_semaph
         availableCookNumber--;
         stockMutex.lock();
         auto pizza = pizzaQueue.front();
-        std::string tmp("cook " + std::to_string(id) + " start to cooking : " + pizza->getName() + ", " + pizza->getSize() + "\n> ");
+        std::string tmp("cook " + std::to_string(id) + " starts to cook : " + pizza->getName() + ", " + pizza->getSize() + "\n> ");
         std::cout << tmp;
         std::fflush(stdout);
         pizza->cook(stock);
@@ -50,7 +50,7 @@ void Kitchen::letMeCook(int id, Stock& stock, int cookTime, std::counting_semaph
         stockMutex.unlock();
         std::this_thread::sleep_for(std::chrono::milliseconds(cookTime * pizza->getCookTime()));
         stockMutex.lock();
-        tmp = "cook " + std::to_string(id) + " have finich to cook : " + pizza->getName() + ", " + pizza->getSize() + "\n> ";
+        tmp = "cook " + std::to_string(id) + " have finished cooking : " + pizza->getName() + ", " + pizza->getSize() + "\n> ";
         std::cout << tmp;
         std::fflush(stdout);
         availableCookNumber++;
