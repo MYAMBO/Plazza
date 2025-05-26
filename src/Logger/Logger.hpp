@@ -8,12 +8,12 @@
 #ifndef LOGGER_HPP_
     #define LOGGER_HPP_
     
-    #include <fstream>
-    #include <iostream>
-    #include <string>
     #include <ctime>
+    #include <string>
+    #include <fstream>
     #include <iomanip>
     #include <sstream>
+    #include <iostream>
     #include <filesystem>
     
 class Logger {
