@@ -15,7 +15,7 @@
 #include "Americana/AmericanaPizza.hpp"
 
 Core::Core(size_t cookNumber, int regenerateTime, int cookTime)
-    :_logger(), _kitchen(cookNumber, regenerateTime, cookTime, _isRunning, _logger), _isRunning(true)
+    :_kitchen(cookNumber, regenerateTime, cookTime, _isRunning), _isRunning(true)
 {
     _pizzaNameList["regina"] = [](std::string size) { return std::make_shared<ReginaPizza>(size); };
     _pizzaNameList["fantasia"] = [](std::string size) { return std::make_shared<FantasiaPizza>(size); };
@@ -27,8 +27,6 @@ Core::Core(size_t cookNumber, int regenerateTime, int cookTime)
     _pizzaSizeList.emplace("L", PizzaSize::L);
     _pizzaSizeList.emplace("XL", PizzaSize::XL);
     _pizzaSizeList.emplace("XXL", PizzaSize::XXL);
-
-    _logger.logCurrentTime();
 }
 
 void Core::handlePizza(std::string type, std::string size, int nb)

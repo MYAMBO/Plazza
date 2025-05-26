@@ -25,7 +25,6 @@ class Core {
         std::unordered_map<std::string, PizzaSize> _pizzaSizeList;
         std::unordered_map<std::string, std::function<std::shared_ptr<IPizza>(std::string)>> _pizzaNameList;
 
-        Logger _logger;
         Kitchen _kitchen; // only one for now
         std::atomic<bool> _isRunning;
 
