@@ -9,14 +9,18 @@
     #define KITCHEN_HPP_
 
     #include <queue>
+    #include <mutex>
     #include <memory>
     #include <thread>
+    #include <atomic>
+    #include <semaphore>
 
     #include "IPizza.hpp"
+    #include "Logger.hpp"
 
 class Kitchen {
     public:
-        Kitchen(std::size_t cookNumber, int regenerateTime, int cookTime, std::atomic<bool>& isRunning);
+        Kitchen(std::size_t cookNumber, int regenerateTime, int cookTime, std::atomic<bool>& isRunning, Logger& logger);
         ~Kitchen();
 
         Stock& getStock();
@@ -25,9 +29,10 @@ class Kitchen {
         void addInQueue(std::shared_ptr<IPizza>& pizza);
     private:
         static void regenerator(Stock& stock, int regenerateTime, std::mutex& stockMutex, std::atomic<bool>& isRunning);
-        static void letMeCook(int id, Stock& stock, int cookTime, std::counting_semaphore<2147483647>& sem, std::queue<std::shared_ptr<IPizza>>& pizzaQueue, std::mutex& stockMutex, int& availableCookNumber, std::atomic<bool>& isRunning);
+        static void letMeCook(int id, Stock& stock, int cookTime, std::counting_semaphore<2147483647>& sem, std::queue<std::shared_ptr<IPizza>>& pizzaQueue, std::mutex& stockMutex, int& availableCookNumber, std::atomic<bool>& isRunning, Logger& logger);
 
         Stock _stock;
+        Logger _logger;
         std::mutex _stockMutex;
         int _availableCookNumber;
         std::thread _regeneratorThread;
