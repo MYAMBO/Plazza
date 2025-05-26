@@ -1,9 +1,14 @@
 /*
 ** EPITECH PROJECT, 2025
-** Logger
+** LoggerLib
 ** File description:
 ** Logger
+**
+** Created by Martin BONTE
+** This file is part of a custom independent logging library written entirely by me.
+** All logic, design, and implementation choices are my own work.
 */
+
 
 #include "Logger.hpp"
 

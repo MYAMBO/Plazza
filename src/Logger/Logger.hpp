@@ -3,14 +3,15 @@
 ** LoggerLib
 ** File description:
 ** Logger
+**
+** Created by Martin BONTE
+** This file is part of a custom independent logging library written entirely by me.
+** All logic, design, and implementation choices are my own work.
 */
 
 #pragma once
 
-    #include <ctime>
-    #include <string>
     #include <fstream>
-    #include <iomanip>
     #include <iostream>
     #include <filesystem>
 
