@@ -10,13 +10,12 @@
 #include "Logger.hpp"
 #include "Kitchen.hpp"
 
-Kitchen::Kitchen(std::size_t cookNumber, int regenerateTime, int cookTime, std::atomic<bool>& isRunning, Logger& logger)
+Kitchen::Kitchen(std::size_t cookNumber, int regenerateTime, int cookTime, std::atomic<bool>& isRunning)
     :_regeneratorThread(regenerator, std::ref(_stock), regenerateTime, std::ref(_stockMutex), std::ref(isRunning)), _sem(std::counting_semaphore<>(0))
 {
-    _logger = logger;
     _availableCookNumber = cookNumber;
     for (std::size_t i = 0; i < cookNumber; i++)
-        _cookThreads.push_back(std::thread(letMeCook, i, std::ref(_stock), cookTime, std::ref(_sem), std::ref(_pizzaQueue), std::ref(_stockMutex), std::ref(_availableCookNumber), std::ref(isRunning), std::ref(_logger)));
+        _cookThreads.push_back(std::thread(letMeCook, i, std::ref(_stock), cookTime, std::ref(_sem), std::ref(_pizzaQueue), std::ref(_stockMutex), std::ref(_availableCookNumber), std::ref(isRunning)));
 }
 
 Kitchen::~Kitchen()
@@ -36,7 +35,7 @@ void Kitchen::regenerator(Stock& stock, int regenerateTime, std::mutex& stockMut
     }
 }
 
-void Kitchen::letMeCook(int id, Stock& stock, int cookTime, std::counting_semaphore<2147483647>& sem, std::queue<std::shared_ptr<IPizza>>& pizzaQueue, std::mutex& stockMutex, int& availableCookNumber, std::atomic<bool>& isRunning, Logger& logger)
+void Kitchen::letMeCook(int id, Stock& stock, int cookTime, std::counting_semaphore<2147483647>& sem, std::queue<std::shared_ptr<IPizza>>& pizzaQueue, std::mutex& stockMutex, int& availableCookNumber, std::atomic<bool>& isRunning)
 {
     while (isRunning) {
         if (!sem.try_acquire_for(std::chrono::milliseconds(100)))
@@ -54,7 +53,7 @@ void Kitchen::letMeCook(int id, Stock& stock, int cookTime, std::counting_semaph
         stockMutex.lock();
         tmp = "cook " + std::to_string(id) + " have finished cooking : " + pizza->getName() + ", " + pizza->getSize() + "\n";
         std::cout << tmp << "> ";
-        logger.log(tmp);
+        debug::Logger::infoLog(tmp);
         std::fflush(stdout);
         availableCookNumber++;
         stockMutex.unlock();
