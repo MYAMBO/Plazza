@@ -53,7 +53,7 @@ void Kitchen::letMeCook(int id, Stock& stock, int cookTime, std::counting_semaph
         stockMutex.lock();
         tmp = "cook " + std::to_string(id) + " have finished cooking : " + pizza->getName() + ", " + pizza->getSize() + "\n";
         std::cout << tmp << "> ";
-        debug::Logger::infoLog(tmp);
+        Debug::InfoLog(tmp, File);
         std::fflush(stdout);
         availableCookNumber++;
         stockMutex.unlock();

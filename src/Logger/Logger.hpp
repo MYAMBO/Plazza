@@ -44,7 +44,7 @@ namespace debug {
             Logger& operator=(const Logger&) = delete;
 
             void logCurrentTime() const;
-            void logCurrentHour() const;
+            std::string logCurrentHour() const;
 
             void setLogFile(const std::string& filePath);
 
@@ -61,7 +61,7 @@ namespace debug {
 }
 
 /************************************************************
-**           >>>>   STATIC  MEMBER VARIABLES   <<<<        **
+**           >>>> STATIC  MEMBER FUNCTIONS   <<<<          **
 ************************************************************/
 
 
@@ -71,7 +71,7 @@ inline constexpr debug::Logger::Output Both = debug::Logger::Output::Both;
 
 
 /************************************************************
- *          >>>>   STATIC  MEMBER FUNCTIONS   <<<<         **
+**           >>>> STATIC  MEMBER FUNCTIONS   <<<<          **
 ************************************************************/
 
 
@@ -101,6 +101,12 @@ inline void InfoLog(const std::string& msg)
     debug::Logger::getInstance().infoLog(msg, debug::Logger::getDefaultOutput());
 }
 
+
+/************************************************************
+**           >>>> STATIC  MEMBER FUNCTIONS   <<<<          **
+************************************************************/
+
+
 /**
  * @brief Log a message with the current time.
  *
@@ -127,6 +133,12 @@ inline void DebugLog(const std::string& msg)
     debug::Logger::getInstance().debugLog(msg, debug::Logger::getDefaultOutput());
 }
 
+
+/************************************************************
+**           >>>> STATIC  MEMBER FUNCTIONS   <<<<          **
+************************************************************/
+
+
 /**
  * @brief Log a warning message with the current time.
  *
@@ -152,6 +164,12 @@ inline void WarningLog(const std::string& msg)
 {
     debug::Logger::getInstance().warningLog(msg, debug::Logger::getDefaultOutput());
 }
+
+
+/************************************************************
+**           >>>> STATIC  MEMBER FUNCTIONS   <<<<          **
+************************************************************/
+
 
 /**
  * @brief Clear the log file.
@@ -183,4 +201,118 @@ inline static void setDefaultOutput(debug::Logger::Output output)
 inline static debug::Logger::Output getDefaultOutput()
 {
     return debug::Logger::getDefaultOutput();
+}
+
+
+namespace Debug
+{
+    /**
+     * @brief Log an info message with the current time.
+     *
+     * This function logs the message with the current time.
+     * @param message The message to log.
+     * @param output (optional) The output destination for the log (console, file, or both).
+     * @return true if the log was successful, false otherwise.
+     */
+    inline void InfoLog(const std::string& msg, debug::Logger::Output output)
+    {
+        debug::Logger::getInstance().infoLog(msg, output);
+    }
+
+    /**
+     * @brief Log an info message with the current time.
+     *
+     * This function logs the message with the current time.
+     * @param message The message to log.
+     * @param output (optional) The output destination for the log (console, file, or both).
+     * @return true if the log was successful, false otherwise.
+     */
+    inline void InfoLog(const std::string& msg)
+    {
+        debug::Logger::getInstance().infoLog(msg, debug::Logger::getDefaultOutput());
+    }
+
+    /**
+     * @brief Log a message with the current time.
+     *
+     * This function logs the message with the current time.
+     * @param message The message to log.
+     * @param output (optional) The output destination for the log (console, file, or both).
+     * @return true if the log was successful, false otherwise.
+     */
+    inline void DebugLog(const std::string& msg, debug::Logger::Output output)
+    {
+        debug::Logger::getInstance().debugLog(msg, output);
+    }
+
+    /**
+     * @brief Log a message with the current time.
+     *
+     * This function logs the message with the current time.
+     * @param message The message to log.
+     * @param output (optional) The output destination for the log (console, file, or both).
+     * @return true if the log was successful, false otherwise.
+     */
+    inline void DebugLog(const std::string& msg)
+    {
+        debug::Logger::getInstance().debugLog(msg, debug::Logger::getDefaultOutput());
+    }
+
+    /**
+     * @brief Log a warning message with the current time.
+     *
+     * This function logs the message with the current time.
+     * @param message The message to log.
+     * @param output (optional) The output destination for the log (console, file, or both).
+     * @return true if the log was successful, false otherwise.
+     */
+    inline void WarningLog(const std::string& msg, debug::Logger::Output output)
+    {
+        debug::Logger::getInstance().warningLog(msg, output);
+    }
+
+    /**
+     * @brief Log a warning message with the current time.
+     *
+     * This function logs the message with the current time.
+     * @param message The message to log.
+     * @param output (optional) The output destination for the log (console, file, or both).
+     * @return true if the log was successful, false otherwise.
+     */
+    inline void WarningLog(const std::string& msg)
+    {
+        debug::Logger::getInstance().warningLog(msg, debug::Logger::getDefaultOutput());
+    }
+
+    /**
+     * @brief Clear the log file.
+     *
+     * This function clears the log file by truncating it.
+     */
+    inline void ClearLogFile()
+    {
+        debug::Logger::clearLogFile();
+    }
+
+    /**
+     * @brief Set the default output for the logger.
+     *
+     * This function sets the default output for the logger.
+     * @param output The output destination for the log (console, file, or both).
+     */
+    inline void SetOutput(debug::Logger::Output output)
+    {
+        debug::Logger::setDefaultOutput(output);
+    }
+
+    /**
+     * @brief Get the default output for the logger.
+     *
+     * This function returns the default output for the logger.
+     * @return The default output destination for the log (console, file, or both).
+     */
+    inline debug::Logger::Output GetOutput()
+    {
+        return debug::Logger::getDefaultOutput();
+    }
 }
