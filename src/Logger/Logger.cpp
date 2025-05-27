@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2025
-** LoggerLib
+** Logger
 ** File description:
 ** Logger
 **
@@ -8,7 +8,6 @@
 ** This file is part of a custom independent logging library written entirely by me.
 ** All logic, design, and implementation choices are my own work.
 */
-
 
 #include "Logger.hpp"
 
@@ -22,6 +21,7 @@ debug::Logger::Logger()
     : _logFilePath("debug.log")
 {
     createLogFile();
+    _output = Output::File;
 }
 
 debug::Logger::~Logger()
@@ -47,13 +47,15 @@ void debug::Logger::logCurrentTime() const
     os << std::put_time(localTime, "%Y-%m-%d %H:%M:%S") << std::endl;
 }
 
-void debug::Logger::logCurrentHour() const
+std::string debug::Logger::logCurrentHour() const
 {
     std::ofstream os(_logFilePath, std::ios::app);
 
     std::time_t now = std::time(nullptr);
     std::tm* localTime = std::localtime(&now);
-    os << std::put_time(localTime, "[%H:%M:%S]");
+    std::ostringstream oss;
+    oss << std::put_time(localTime, "[%H:%M:%S]");
+    return oss.str();
 }
 
 bool debug::Logger::logFileExists() const
@@ -129,61 +131,61 @@ bool debug::Logger::log(const std::string& message)
 ************************************************************/
 
 
-bool debug::Logger::infoLog(const std::string& message, debug::Logger::Output output)
+bool debug::Logger::infoLog(const std::string& message, debug::Logger::Output output, bool date)
 {
-    if (output == debug::Logger::Output::Console) {
-        std::cout << "[INFO] " << message << std::endl;
-        return true;
+    std::string dateStr;
+    if (date) {
+        std::time_t now = std::time(nullptr);
+        std::tm* localTime = std::localtime(&now);
+        std::ostringstream oss;
+        oss << std::put_time(localTime, "[%Y-%m-%d %H:%M:%S] ");
+        dateStr = oss.str();
     }
-    
-    if (output == debug::Logger::Output::File || output == debug::Logger::Output::Both) {
-        return getInstance().log("[INFO] " + message + "\n");
+    if (output == Console || output == Both) {
+        std::cout << dateStr << "[INFO]   " << message << std::endl;
     }
-    
+    if (output == File || output == Both) {
+        return getInstance().log(dateStr + "[INFO]   " + message + "\n");
+    }
     return false;
 }
 
-bool debug::Logger::infoLog(const std::string& message)
+bool debug::Logger::debugLog(const std::string& message, debug::Logger::Output output, bool date)
 {
-    return infoLog(message, getInstance()._output);
-}
-
-bool debug::Logger::debugLog(const std::string& message, debug::Logger::Output output)
-{
-    if (output == debug::Logger::Output::Console) {
-        std::cout << "[DEBUG] " << message << std::endl;
-        return true;
+    std::string dateStr;
+    if (date) {
+        std::time_t now = std::time(nullptr);
+        std::tm* localTime = std::localtime(&now);
+        std::ostringstream oss;
+        oss << std::put_time(localTime, "[%Y-%m-%d %H:%M:%S] ");
+        dateStr = oss.str();
     }
-    
-    if (output == debug::Logger::Output::File || output == debug::Logger::Output::Both) {
-        return getInstance().log("[DEBUG] " + message + "\n");
+    if (output == Console || output == Both) {
+        std::cout << dateStr << "[DEBUG]   " << message << std::endl;
     }
-    
+    if (output == File || output == Both) {
+        return getInstance().log(dateStr + "[DEBUG]   " + message + "\n");
+    }
     return false;
 }
 
-bool debug::Logger::debugLog(const std::string& message)
+bool debug::Logger::warningLog(const std::string& message, debug::Logger::Output output, bool date)
 {
-    return debugLog(message, getInstance()._output);
-}
-
-bool debug::Logger::warningLog(const std::string& message, debug::Logger::Output output)
-{
-    if (output == debug::Logger::Output::Console) {
-        std::cerr << "[WARNING] " << message << std::endl;
-        return true;
+    std::string dateStr;
+    if (date) {
+        std::time_t now = std::time(nullptr);
+        std::tm* localTime = std::localtime(&now);
+        std::ostringstream oss;
+        oss << std::put_time(localTime, "[%Y-%m-%d %H:%M:%S] ");
+        dateStr = oss.str();
     }
-    
-    if (output == debug::Logger::Output::File || output == debug::Logger::Output::Both) {
-        return getInstance().log("[WARNING] " + message + "\n");
+    if (output == Console || output == Both) {
+        std::cout << dateStr << "[WARNING] " << message << std::endl;
     }
-    
+    if (output == File || output == Both) {
+        return getInstance().log(dateStr + "[WARNING] " + message + "\n");
+    }
     return false;
-}
-
-bool debug::Logger::warningLog(const std::string& message)
-{
-    return warningLog(message, getInstance()._output);
 }
 
 void debug::Logger::clearLogFile()
