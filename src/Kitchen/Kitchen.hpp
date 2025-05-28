@@ -16,7 +16,6 @@
     #include <semaphore>
 
     #include "IPizza.hpp"
-    #include "Logger.hpp"
 
 class Kitchen {
     public:

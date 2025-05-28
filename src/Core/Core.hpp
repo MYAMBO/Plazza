@@ -6,12 +6,11 @@
 */
 
 #ifndef PARSING_HPP_
-#define PARSING_HPP_
+    #define PARSING_HPP_
 
-#include <functional>
+    #include <functional>
 
-#include "Logger.hpp"
-#include "Kitchen.hpp"
+    #include "Kitchen.hpp"
 
 class Core {
     public:

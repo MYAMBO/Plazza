@@ -11,9 +11,7 @@
 
 #pragma once
 
-    #include <fstream>
-    #include <iostream>
-    #include <filesystem>
+    #include <string>
 
 namespace debug {
     class Logger {
