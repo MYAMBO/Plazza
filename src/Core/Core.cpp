@@ -5,7 +5,7 @@
 ** Core
 */
 
-#include <iostream>
+#include <algorithm>
 
 #include "Core.hpp"
 #include "Utils.hpp"
@@ -49,12 +49,13 @@ void Core::handleCommand(std::vector<std::string> wordArray)
         std::cout << "command must be : \"[pizza type] [pizza size] [xn]\" when n is the number of pizza" << std::endl;
         return;
     }
+    std::transform(wordArray[0].begin(), wordArray[0].end(), wordArray[0].begin(), ::tolower);
     if (this->_pizzaNameList.find(wordArray[0]) == this->_pizzaNameList.end()) {
-        std::cout << "this pizza does not exist" << std::endl;
+        std::cout << "\"" << wordArray[0] << "\" : this pizza does not exist" << std::endl;
         return;
     }
     if (this->_pizzaSizeList.find(wordArray[1]) == this->_pizzaSizeList.end()) {
-        std::cout << "this size does not exist" << std::endl;
+        std::cout << "\"" << wordArray[1] << "\" : this size does not exist" << std::endl;
         return;
     }
     std::string strNbWithoutX = wordArray[2].substr(1, wordArray[2].size() - 1);
@@ -74,6 +75,7 @@ void Core::parse()
 {
     std::string line;
     std::vector<std::string> wordArray;
+    std::vector<std::string> commandList;
 
     std::cout << "> ";
     while (std::getline(std::cin, line)) {
@@ -84,8 +86,11 @@ void Core::parse()
             std::cout << "> ";
             continue;
         }
-        wordArray = Utils::strToWordArray(line, " \t");
-        handleCommand(wordArray);
+        commandList = Utils::strToWordArray(line, ";");
+        for (auto elt : commandList) {
+            wordArray = Utils::strToWordArray(elt, " \t");
+            handleCommand(wordArray);
+        }
         std::cout << "> ";
     }
     _isRunning = false;
