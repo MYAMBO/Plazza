@@ -9,6 +9,12 @@
 ** All logic, design, and implementation choices are my own work.
 */
 
+#include <iomanip>
+#include <ostream>
+#include <fstream>
+#include <iostream>
+#include <filesystem>
+
 #include "Logger.hpp"
 
 

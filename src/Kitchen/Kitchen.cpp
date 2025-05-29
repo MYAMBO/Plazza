@@ -5,7 +5,9 @@
 ** Kitchen
 */
 
+#include <ctime>
 #include <iostream>
+#include <ostream>
 
 #include "Logger.hpp"
 #include "Kitchen.hpp"
@@ -28,7 +30,10 @@ Kitchen::~Kitchen()
 void Kitchen::regenerator(Stock& stock, int regenerateTime, std::mutex& stockMutex, std::atomic<bool>& isRunning)
 {
     while (isRunning) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(regenerateTime));
+        auto end = std::chrono::steady_clock::now() + std::chrono::milliseconds(regenerateTime);
+        while (std::chrono::steady_clock::now() < end)
+            if (!isRunning)
+                return;
         stockMutex.lock();
         stock.IncrementAll();
         stockMutex.unlock();
@@ -44,17 +49,19 @@ void Kitchen::letMeCook(int id, Stock& stock, int cookTime, std::counting_semaph
         stockMutex.lock();
         auto pizza = pizzaQueue.front();
         std::string tmp("cook " + std::to_string(id) + " starts to cook : " + pizza->getName() + ", " + pizza->getSize() + "\n> ");
-        std::cout << tmp;
-        std::fflush(stdout);
+        std::cout << tmp << std::flush;
         pizza->cook(stock);
         pizzaQueue.pop();
         stockMutex.unlock();
+        auto end = std::chrono::steady_clock::now() + std::chrono::milliseconds(cookTime * pizza->getCookTime());
+        while (std::chrono::steady_clock::now() < end)
+            if (!isRunning)
+                return;
         std::this_thread::sleep_for(std::chrono::milliseconds(cookTime * pizza->getCookTime()));
         stockMutex.lock();
         tmp = "cook " + std::to_string(id) + " have finished cooking : " + pizza->getName() + ", " + pizza->getSize();
-        std::cout << tmp << "\n> ";
+        std::cout << tmp << "\n> " << std::flush;
         Debug::InfoLog(tmp, File, true);
-        std::fflush(stdout);
         availableCookNumber++;
         stockMutex.unlock();
     }
