@@ -17,6 +17,7 @@ INCLUDE_FLAGS 	= 	-Isrc/Core									\
 					-Isrc/Utils 								\
 					-Isrc/Pizza 								\
 					-Isrc/Logger 								\
+					-Isrc/Parsing 								\
 					-Isrc/Kitchen 								\
 
 SRC_TEST        = 												\
@@ -26,8 +27,10 @@ SRC		 		=	src/main.cpp 								\
 					src/Core/Core.cpp 							\
 																\
 					src/Utils/Utils.cpp 						\
-																\
+					                                            \
 					src/Logger/Logger.cpp 						\
+																\
+					src/Parsing/Parsing.cpp 					\
 																\
 					src/Kitchen/Stock.cpp 						\
 					src/Kitchen/Kitchen.cpp 					\

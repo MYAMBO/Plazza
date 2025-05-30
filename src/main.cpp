@@ -6,11 +6,24 @@
 */
 
 #include "Core.hpp"
+#include "Logger.hpp"
+#include "Parsing.hpp"
 
-int main(void)
+#include <iostream>
+
+int main(int argc, char **argv)
 {
-    Core parser(5, 10000, 10000);
-
-    parser.parse();
+    try {
+        Parsing parsing(argv, argc);
+        Core restaurante(parsing.getNbCookNumber(), parsing.getRegenerateTime(), parsing.getCookTime());
+    
+        Debug::ClearLogFile();
+        restaurante.parse();
+    } catch (const Parsing::ParsingError &ex) {
+        ex.what();
+        std::cout << std::endl;
+        Parsing::help();
+        return 84;
+    }
     return 0;
 }
