@@ -13,6 +13,7 @@
 #include <string>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <memory>
 
 #define BUFFER_SIZE 1024
 
@@ -29,6 +30,29 @@ private:
     int _fd;
     std::string _path;
     bool _writeMode;
+};
+
+struct KitchenHandle {
+    pid_t pid{};
+    std::string fifoPath;
+    std::unique_ptr<KitchenPipe> pipe;
+    bool isClosed = false;
+
+    KitchenHandle() = default;
+
+    KitchenHandle(pid_t p, const std::string& path)
+        : pid(p), fifoPath(path), pipe(std::make_unique<KitchenPipe>(path, true)) {}
+
+    void send(const std::string& msg) {
+        if (pipe)
+            (*pipe) << msg;
+    }
+
+    void close() {
+        if (pipe) {
+            pipe.reset();
+        }
+    }
 };
 
 #endif //KITCHENPIPE_HPP

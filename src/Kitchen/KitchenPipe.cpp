@@ -17,15 +17,11 @@ KitchenPipe::KitchenPipe(const std::string& path, bool writeMode)
     this->_path = path;
     this->_writeMode = writeMode;
 
-    std::cout << "LALA1" << std::endl;
-
-    mkfifo(this->_path.c_str(), 0666);
-    std::cout << "LALA2" << std::endl;
+    // mkfifo(this->_path.c_str(), 0666);
     if (writeMode)
         this->_fd = open(this->_path.c_str(), O_WRONLY);
     else
         this->_fd = open(this->_path.c_str(), O_RDONLY);
-    std::cout << "LALA3" << std::endl;
 }
 
 KitchenPipe::~KitchenPipe()
@@ -36,7 +32,6 @@ KitchenPipe::~KitchenPipe()
 
 KitchenPipe& KitchenPipe::operator<<(const std::string& message)
 {
-    std::cout << "coucou2" << std::endl;
     if (this->_writeMode)
         write(this->_fd, (message + "\r\n").c_str(), (message + "\r\n").size());
     return *this;
@@ -44,8 +39,7 @@ KitchenPipe& KitchenPipe::operator<<(const std::string& message)
 
 KitchenPipe& KitchenPipe::operator>>(std::string& message)
 {
-    std::cout << "coucou" << std::endl;
-    char buffer[BUFFER_SIZE];
+    char buffer[BUFFER_SIZE] = {0};
     read(this->_fd, buffer, BUFFER_SIZE);
     message.append(buffer);
     while (message.find("\r\n") == std::string::npos)
