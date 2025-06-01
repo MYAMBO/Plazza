@@ -30,7 +30,7 @@ class Kitchen {
         void addInQueue(std::shared_ptr<IPizza>& pizza);
     private:
         static void regenerator(Stock& stock, int regenerateTime, std::mutex& stockMutex, std::atomic<bool>& isRunning);
-        static void letMeCook(int id, Stock& stock, int cookTime, std::counting_semaphore<2147483647>& sem, std::queue<std::shared_ptr<IPizza>>& pizzaQueue, std::mutex& stockMutex, int& availableCookNumber, std::atomic<bool>& isRunning);
+        static void letMeCook(int id, Stock& stock, int cookTime, std::counting_semaphore<2147483647>& sem, std::queue<std::shared_ptr<IPizza>>& pizzaQueue, std::mutex& stockMutex, int& availableCookNumber, std::atomic<bool>& isRunning, std::string _path);
 
         Stock _stock;
         std::mutex _stockMutex;
