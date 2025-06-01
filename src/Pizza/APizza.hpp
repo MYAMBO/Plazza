@@ -23,6 +23,8 @@ class APizza : public IPizza {
 
         bool canCook(Stock& stock);
         void cook(Stock& stock);
+        std::string pack() const;
+        APizza unpack() const;
     protected:
         int _cookTime;
         PizzaType _type;
