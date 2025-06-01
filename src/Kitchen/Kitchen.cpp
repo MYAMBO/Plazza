@@ -5,9 +5,10 @@
 ** Kitchen
 */
 
+#include <chrono>
 #include <ctime>
 #include <iostream>
-#include <ostream>
+#include <thread>
 
 #include "Logger.hpp"
 #include "Kitchen.hpp"
@@ -66,7 +67,7 @@ Kitchen::Kitchen(std::size_t cookNumber, int regenerateTime, int cookTime, std::
         }
         if (!wordArray.empty() && wordArray[0] == "close")
         {
-            InfoLog("Kitchen " + toKitchenPipe._path.substr(toKitchenPipe._path.find_last_of('_')) + " closed");
+            InfoLog("Kitchen " + toKitchenPipe._path.substr(toKitchenPipe._path.find_last_of('_')) + " closed", Both);
             exit(0);
         }
         if (!wordArray.empty() && wordArray[0] == "ingredients")
@@ -112,9 +113,16 @@ void Kitchen::letMeCook(int id, Stock& stock, int cookTime, std::counting_semaph
         availableCookNumber--;
         stockMutex.lock();
         auto pizza = pizzaQueue.front();
+        while (!pizza->canCook(stock)) {
+            stockMutex.unlock();
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            stockMutex.lock();
+            pizza = pizzaQueue.front();
+        }
         std::string tmp(
             "Kitchen " + _path.substr(_path.find_last_of('_')) + " cook " + std::to_string(id) + " starts to cook : " + pizza->getName() + ", " + pizza->getSize());
-        InfoLog(tmp);
+        InfoLog(tmp, Both);
+        std::cout << "> ";
         pizza->cook(stock);
         pizzaQueue.pop();
         stockMutex.unlock();
@@ -122,10 +130,10 @@ void Kitchen::letMeCook(int id, Stock& stock, int cookTime, std::counting_semaph
         while (std::chrono::steady_clock::now() < end)
             if (!isRunning)
                 return;
-        std::this_thread::sleep_for(std::chrono::milliseconds(cookTime * pizza->getCookTime()));
         stockMutex.lock();
         tmp = "Kitchen " + _path.substr(_path.find_last_of('_')) + " cook " + std::to_string(id) + " have finished cooking : " + pizza->getName() + ", " + pizza->getSize();
-        Debug::InfoLog(tmp);
+        Debug::InfoLog(tmp, Both);
+        std::cout << "> ";
         availableCookNumber++;
         stockMutex.unlock();
     }

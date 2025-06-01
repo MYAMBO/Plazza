@@ -9,7 +9,6 @@
 
 #include "KitchenPipe.hpp"
 
-#include <iostream>
 #include <unistd.h>
 
 KitchenPipe::KitchenPipe(const std::string& path, bool writeMode)
