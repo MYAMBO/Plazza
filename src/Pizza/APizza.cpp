@@ -50,7 +50,7 @@ std::string APizza::pack() const
                std::to_string(std::stoi(_size));
 }
 
-static APizza unpack(const std::string& data) {
+APizza unpack(const std::string& data) {
     std::istringstream iss(data);
     int t, s;
     if (!(iss >> t >> s)) {
