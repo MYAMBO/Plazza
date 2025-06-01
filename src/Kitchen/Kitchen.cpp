@@ -47,6 +47,10 @@ Kitchen::Kitchen(std::size_t cookNumber, int regenerateTime, int cookTime, std::
     {
         command.clear();
         toKitchenPipe >> command;
+        if (command.empty()) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            continue;
+        }
         auto wordArray = Utils::strToWordArray(command, " \t\n");
         if (!wordArray.empty() && wordArray[0] == "add")
         {
@@ -90,12 +94,12 @@ Kitchen::~Kitchen()
 
 void Kitchen::regenerator(Stock& stock, int regenerateTime, std::mutex& stockMutex, std::atomic<bool>& isRunning)
 {
-    while (isRunning)
+   while (isRunning)
     {
-        auto end = std::chrono::steady_clock::now() + std::chrono::milliseconds(regenerateTime);
-        while (std::chrono::steady_clock::now() < end)
-            if (!isRunning)
-                return;
+        for (int elapsed = 0; elapsed < regenerateTime && isRunning; elapsed += 100)
+            std::this_thread::sleep_for(std::chrono::milliseconds(std::min(100, regenerateTime - elapsed)));
+        if (!isRunning) 
+            return;
         stockMutex.lock();
         stock.IncrementAll();
         stockMutex.unlock();
@@ -126,10 +130,11 @@ void Kitchen::letMeCook(int id, Stock& stock, int cookTime, std::counting_semaph
         pizza->cook(stock);
         pizzaQueue.pop();
         stockMutex.unlock();
-        auto end = std::chrono::steady_clock::now() + std::chrono::milliseconds(cookTime * pizza->getCookTime());
-        while (std::chrono::steady_clock::now() < end)
-            if (!isRunning)
-                return;
+        for (int elapsed = 0; elapsed < cookTime * pizza->getCookTime() && isRunning; elapsed += 100)
+            std::this_thread::sleep_for(std::chrono::milliseconds(std::min(100, cookTime * pizza->getCookTime() - elapsed)));
+        if (!isRunning)
+            return;
+        std::this_thread::sleep_for(std::chrono::milliseconds(cookTime * pizza->getCookTime()));
         stockMutex.lock();
         tmp = "Kitchen " + _path.substr(_path.find_last_of('_')) + " cook " + std::to_string(id) + " have finished cooking : " + pizza->getName() + ", " + pizza->getSize();
         Debug::InfoLog(tmp, Both);
