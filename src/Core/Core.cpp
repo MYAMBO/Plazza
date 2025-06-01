@@ -63,8 +63,6 @@ void Core::spawnKitchen(int index)
 
 void Core::handlePizza(std::string type, std::string size, int nb)
 {
-    // if (_kitchens.empty() || _kitchens.data()->isClosed == true)
-    //     this->spawnKitchen(_kitchenIndex++);
     for (auto &elt : _kitchens)
     {
         if (elt.isClosed)

@@ -17,7 +17,6 @@ KitchenPipe::KitchenPipe(const std::string& path, bool writeMode)
     this->_path = path;
     this->_writeMode = writeMode;
 
-    // mkfifo(this->_path.c_str(), 0666);
     if (writeMode)
         this->_fd = open(this->_path.c_str(), O_WRONLY);
     else
