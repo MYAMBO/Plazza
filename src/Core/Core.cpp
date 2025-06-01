@@ -154,7 +154,7 @@ void Core::parse()
         }
         if (line == "exit")
             break;
-        if (line == "ingredients") {
+        if (line == "status") {
             for (auto &elt : _kitchens)
             {
                 if (elt.isClosed)
