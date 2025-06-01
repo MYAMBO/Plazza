@@ -34,6 +34,7 @@ SRC		 		=	src/main.cpp 								\
 																\
 					src/Kitchen/Stock.cpp 						\
 					src/Kitchen/Kitchen.cpp 					\
+					src/Kitchen/KitchenPipe.cpp 				\
 																\
 					src/Pizza/APizza.cpp 						\
 					src/Pizza/Regina/ReginaPizza.cpp 			\
