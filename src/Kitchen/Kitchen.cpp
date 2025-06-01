@@ -134,6 +134,7 @@ void Kitchen::letMeCook(int id, Stock& stock, int cookTime, std::counting_semaph
             std::this_thread::sleep_for(std::chrono::milliseconds(std::min(100, cookTime * pizza->getCookTime() - elapsed)));
         if (!isRunning)
             return;
+        std::this_thread::sleep_for(std::chrono::milliseconds(cookTime * pizza->getCookTime()));
         stockMutex.lock();
         tmp = "Kitchen " + _path.substr(_path.find_last_of('_')) + " cook " + std::to_string(id) + " have finished cooking : " + pizza->getName() + ", " + pizza->getSize();
         Debug::InfoLog(tmp, Both);
