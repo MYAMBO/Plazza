@@ -23,36 +23,27 @@ public:
     explicit KitchenPipe(const std::string &path, bool writeMode = false);
     ~KitchenPipe();
 
+    std::string _path;
+
     KitchenPipe& operator<<(const std::string &message);
     KitchenPipe& operator>>(std::string &message);
 
 private:
     int _fd;
-    std::string _path;
     bool _writeMode;
 };
 
 struct KitchenHandle {
     pid_t pid{};
     std::string fifoPath;
-    std::unique_ptr<KitchenPipe> pipe;
+    std::unique_ptr<KitchenPipe> toKitchenPipe;
+    std::unique_ptr<KitchenPipe> toReceptionPipe;
     bool isClosed = false;
 
     KitchenHandle() = default;
 
     KitchenHandle(pid_t p, const std::string& path)
-        : pid(p), fifoPath(path), pipe(std::make_unique<KitchenPipe>(path, true)) {}
-
-    void send(const std::string& msg) {
-        if (pipe)
-            (*pipe) << msg;
-    }
-
-    void close() {
-        if (pipe) {
-            pipe.reset();
-        }
-    }
+        : pid(p), fifoPath(path), toKitchenPipe(std::make_unique<KitchenPipe>(path, true)), toReceptionPipe(std::make_unique<KitchenPipe>(path, true)) {}
 };
 
 #endif //KITCHENPIPE_HPP

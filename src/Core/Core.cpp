@@ -17,7 +17,7 @@
 #include "Americana/AmericanaPizza.hpp"
 
 Core::Core(size_t cookNumber, int regenerateTime, int cookTime)
-    :_kitchen(cookNumber, regenerateTime, cookTime, _isRunning), _isRunning(true)
+    : _cookNumber(cookNumber), _regenerateTime(regenerateTime), _cookTime(cookTime), _isRunning(true), _kitchenIndex(0)
 {
     _pizzaNameList["regina"] = [](std::string size) { return std::make_shared<ReginaPizza>(size); };
     _pizzaNameList["fantasia"] = [](std::string size) { return std::make_shared<FantasiaPizza>(size); };
@@ -31,18 +31,78 @@ Core::Core(size_t cookNumber, int regenerateTime, int cookTime)
     _pizzaSizeList.emplace("XXL", PizzaSize::XXL);
 }
 
+void Core::spawnKitchen(int index)
+{
+    std::string fifoPathToKitchen = "/tmp/kitchen_tokitchen_" + std::to_string(index);
+    std::string fifoPathToReception = "/tmp/kitchen_toreception_" + std::to_string(index);
+    mkfifo(fifoPathToKitchen.c_str(), 0666);
+    mkfifo(fifoPathToReception.c_str(), 0666);
+
+    pid_t pid = fork();
+    if (pid == 0) {
+        KitchenPipe pipeToKitchen(fifoPathToKitchen, false);
+        KitchenPipe pipeToReception(fifoPathToReception, true);
+        Kitchen kitchen(_cookNumber, _regenerateTime, _cookTime, _isRunning, pipeToKitchen, pipeToReception);
+        std::cout << "Here" << std::endl;
+        std::exit(0);
+    }
+    else if (pid > 0) {
+        KitchenHandle handle;
+        handle.pid = pid;
+        handle.fifoPath = fifoPathToKitchen;
+        handle.toKitchenPipe = std::make_unique<KitchenPipe>(fifoPathToKitchen, true);
+        handle.toReceptionPipe = std::make_unique<KitchenPipe>(fifoPathToReception, false);
+        _kitchens.push_back(std::move(handle));
+    }
+    else
+    {
+        std::perror("fork error");
+    }
+}
+
+
 void Core::handlePizza(std::string type, std::string size, int nb)
 {
-    for (int i = 0; i < nb; i++) {
-        auto pizza = _pizzaNameList[type](size);
-
-        _kitchen.addInQueue(pizza);
-
-        // this 2 conditions must be used while implementing multy kitchen :
-
-        // if (_kitchen.getAvailableCookNumber() == 0)
-        // if (pizza->canCook(_kitchen.getStock()))
+    // if (_kitchens.empty() || _kitchens.data()->isClosed == true)
+    //     this->spawnKitchen(_kitchenIndex++);
+    for (auto &elt : _kitchens)
+    {
+        if (elt.isClosed)
+            continue;
+        elt.toKitchenPipe->operator<<("getAvailable");
+        std::string availableCookNumber;
+        elt.toReceptionPipe->operator>>(availableCookNumber);
+        int availableCookNumberInt = std::stoi(availableCookNumber);
+        if (availableCookNumberInt >= nb)
+        {
+            elt.toKitchenPipe->operator<<("add " + type + " " + size + " " + std::to_string(nb) + "\n");
+            nb = 0;
+        }
+        else
+        {
+            elt.toKitchenPipe->operator<<("add " + type + " " + size + " " + std::to_string(availableCookNumberInt) + "\n");
+            nb = nb - availableCookNumberInt;
+        }
     }
+    while (nb != 0)
+    {
+        this->spawnKitchen(_kitchenIndex++);
+        this->_kitchens.back().toKitchenPipe->operator<<("getAvailable");
+        std::string availableCookNumber;
+        this->_kitchens.back().toReceptionPipe->operator>>(availableCookNumber);
+        int availableCookNumberInt = std::stoi(availableCookNumber);
+        if (availableCookNumberInt >= nb)
+        {
+            this->_kitchens.back().toKitchenPipe->operator<<("add " + type + " " + size + " " + std::to_string(nb) + "\n");
+            nb = 0;
+        }
+        else
+        {
+            this->_kitchens.back().toKitchenPipe->operator<<("add " + type + " " + size + " " + std::to_string(availableCookNumberInt) + "\n");
+            nb = nb - availableCookNumberInt;
+        }
+    }
+
 }
 
 void Core::handleCommand(std::vector<std::string> wordArray)
@@ -81,10 +141,31 @@ void Core::parse()
 
     std::cout << "> ";
     while (std::getline(std::cin, line)) {
+        for (auto &elt : _kitchens)
+        {
+            if (elt.isClosed)
+                continue;
+            elt.toKitchenPipe->operator<<("time");
+            std::string time;
+            elt.toReceptionPipe->operator>>(time);
+            if (stoi(time) >= 5)
+            {
+                elt.isClosed = true;
+                elt.toKitchenPipe->operator<<("close");
+            }
+        }
         if (line == "exit")
             break;
         if (line == "ingredients") {
-            _kitchen.printIngredient();
+            for (auto &elt : _kitchens)
+            {
+                if (elt.isClosed)
+                    continue;
+                elt.toKitchenPipe->operator<<("ingredients");
+                std::string tmp;
+                elt.toReceptionPipe->operator>>(tmp);
+                std::cout << "Kitchen " << elt.fifoPath.substr(elt.fifoPath.find_last_of('_')) << std::endl << tmp;
+            }
             std::cout << "> ";
             continue;
         }
@@ -94,6 +175,12 @@ void Core::parse()
             handleCommand(wordArray);
         }
         std::cout << "> ";
+    }
+    for (auto &elt : _kitchens)
+    {
+        if (elt.isClosed)
+            continue;
+        elt.toKitchenPipe->operator<<("close");
     }
     _isRunning = false;
     std::cout << "exit" << std::endl;
